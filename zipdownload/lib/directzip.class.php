@@ -2,6 +2,7 @@
 /*
  @Code reference from https://gist.github.com/sunghwan2789/9b86467b6b99cf7934b5
  */
+if (!defined('__XE__')) exit();
 
 class DirectZip
 {
