@@ -10,26 +10,32 @@ require_once(_XE_PATH_ . 'addons/zipdownload/lib/directzip.class.php');
 function zipDownload($target_srl) {
     $oDocumentModel = getModel('document');
     $oDocument = $oDocumentModel->getDocument($target_srl);
-    
+
     $oFileModel = getModel('file');
     $files = $oFileModel->getFiles($target_srl);
 
     $zip = new DirectZip();
     $zip->open($oDocument->variables['title'] . '.zip');
-    
+
     foreach ($files as $file) {
-        $zip->addFile(_XE_PATH_ . 
-                    $file->uploaded_filename, $file->source_filename);
+        // Call 'before' trigger
+        $output = ModuleHandler::triggerCall('file.downloadFile', 'before',
+            $file);
+
+        $args = new stdClass();
+        $args->file_srl = $file->file_srl;
+        executeQuery('file.updateFileDownloadCount', $args);
+        // Call 'after' trigger
+        $output = ModuleHandler::triggerCall('file.downloadFile', 'after',
+            $file);
+
+        // Add file to zip
+        $zip->addFile(_XE_PATH_
+                    . $file->uploaded_filename, $file->source_filename);
     }
     $zip->close();
-    
-    $args = new stdClass();
-    foreach ($files as $file) {
-    	$args->file_srl = $file->file_srl;
-    	executeQuery('file.updateFileDownloadCount', $args);
-    }
     Context::close();
-	exit();
+    exit();
 }
 
 /* End of file zipdownload.func.php */
