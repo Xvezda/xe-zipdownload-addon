@@ -4,7 +4,7 @@
     <description xml:lang="ko">
         첨부파일 전체를 zip 파일로 한번에 다운로드 할 수 있도록 지원하는 애드온입니다.
     </description>
-    <version>1.1</version>
+    <version>1.2</version>
     <date>2017-12-20</date>
 
     <author email_address="xvezda@naver.com" link="https://xvezda.com">
@@ -40,6 +40,12 @@
         <var name="link_html" type="text">
             <title xml:lang="ko">HTML 편집</title>
             <description xml:lang="ko">삽입되는 링크의 HTML 코드를 직접 입력하여 편집이 가능합니다.</description>
+        </var>
+        <var name="require_point" type="text">
+            <title xml:lang="ko">통합 포인트 설정</title>
+            <description xml:lang="ko">파일의 개수와 상관없이 일괄적으로 차감시킬 포인트를 설정합니다.
+            XE의 포인트 표기법과 동일하게 포인트를 증가시킬 경우 +, 감소시킬 경우 -를 앞에 붙여주세요
+            (빈칸으로 설정 되어있을 경우 기존 코어의 계산방식이 적용됩니다).</description>
         </var>
 	</extra_vars>
 </addon>

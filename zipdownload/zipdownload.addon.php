@@ -30,7 +30,7 @@ if ($called_position == 'after_module_proc'
 
         // XE select box CSS hack
         Context::addHtmlFooter(
-            '<style> #auto_insert { vertical-align: top }</style>' . PHP_EOL
+            '<style> #auto_insert, #require_point { vertical-align: top }</style>' . PHP_EOL
         );
     }
 }
@@ -154,7 +154,16 @@ if ($called_position == 'after_module_proc' && Context::get('act') == 'zip') {
     }
 
     //point check
+    $oAddonModel = getAdminModel('addon');
+    $addon_info = $oAddonModel->getAddonInfoXml('zipdownload');
+
+    $vars = new stdClass();
+    foreach ($addon_info->extra_vars as $var) {
+        $vars->{$var->name} = $var->value;
+    }
+
     $point = 0;
+    $require_point = 0;
     $file_count = count($files);
     $member_srl = $logged_info->member_srl;
     $module_srl = $this->module_srl;
@@ -178,6 +187,7 @@ if ($called_position == 'after_module_proc' && Context::get('act') == 'zip') {
         } else {
             $point = intval($config->download_file);
         }
+        
         if (!$is_logged && ($config->disable_download == 'Y') && $point) {
             return $this->stop('msg_not_permitted_download');
         }
@@ -185,12 +195,16 @@ if ($called_position == 'after_module_proc' && Context::get('act') == 'zip') {
         $oPointModel = getModel('point');
         $cur_point = $oPointModel->getPoint($member_srl, true);
 
+        $require_point = $point * $file_count;
+        if (isset($vars->require_point) && $vars->require_point != '') {
+            $require_point = intval($vars->require_point);
+        }
         if ($config->disable_download == 'Y'
-            && $point * $file_count + $cur_point < 0) {
+            && $require_point + $cur_point < 0) {
             return $this->stop('msg_cannot_download');
         }
     }
-    zipDownload($target_srl);
+    zipDownload($target_srl, $require_point);
 }
 
 /* End of file zipdownload.addon.php */
